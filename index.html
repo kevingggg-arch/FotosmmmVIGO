@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Access</title>
+<style>
+  body{margin:0;background:#000;color:#0f0;font-family:"Courier New",monospace;
+       overflow:hidden;height:100vh;font-size:13px}
+  #log{padding:14px;line-height:1.6;white-space:pre-wrap}
+  .ok{color:#0f0}
+  .warn{color:#ff0}
+  .err{color:#f55}
+  #bar{position:fixed;bottom:0;left:0;right:0;height:6px;background:#111}
+  #fill{height:100%;width:0%;background:#0f0;transition:width .3s}
+  #pct{position:fixed;bottom:10px;right:14px}
+  .glitch{animation:g .15s infinite}
+  @keyframes g{0%{opacity:1;transform:translateX(0)}
+    50%{opacity:.7;transform:translateX(1px)}100%{opacity:1;transform:translateX(0)}}
+  #final{display:none;text-align:center;padding-top:20vh;font-size:16px;padding:20vh 20px 0}
+  #final b{font-size:22px;display:block;margin-bottom:14px}
+  #final button{margin-top:20px;font-size:16px;padding:10px 22px;border-radius:8px;border:1px solid #0f0;background:#000;color:#0f0}
+</style>
+</head>
+<body>
+<div id="log"></div>
+<div id="bar"><div id="fill"></div></div>
+<div id="pct">0%</div>
+<div id="final">
+  <b>sudo rm -rf ./miedo</b>
+  😂 Tranquilo, nadie ha tocado tu móvil.<br>
+  Era una página web, no un hackeo real.<br>
+  (nmap scan complete: 0 vulnerabilities found — pero bien que te lo creíste)
+  <br><button onclick="location.reload()">Reiniciar simulación</button>
+</div>
+
+<script>
+const lineas = [
+  ["Connecting to target device...", "ok"],
+  ["Resolving host: 192.168.1.42", "ok"],
+  ["Handshake established", "ok"],
+  ["WARNING: unauthorized access attempt logged", "warn"],
+  ["Bypassing firewall rules...", "ok"],
+  ["Exploiting known CVE-2024-XXXX...", "warn"],
+  ["Root shell obtained", "err"],
+  ["Dumping /etc/passwd...", "ok"],
+  ["Extracting contacts.db...", "ok"],
+  ["Extracting photos/ (1,204 files)...", "ok"],
+  ["Accessing camera stream...", "err"],
+  ["GPS lock: 42.2406° N, 8.7207° W", "ok"],
+  ["Uploading archive to remote server...", "warn"],
+];
+
+const log = document.getElementById("log");
+const fill = document.getElementById("fill");
+const pct = document.getElementById("pct");
+let i = 0, p = 0;
+
+function addLine(){
+  if(i < lineas.length){
+    const [texto, tipo] = lineas[i];
+    const d = document.createElement("div");
+    d.className = tipo;
+    d.textContent = "[" + new Date().toLocaleTimeString() + "] " + texto;
+    log.appendChild(d);
+    window.scrollTo(0, document.body.scrollHeight);
+    i++;
+    setTimeout(addLine, 550 + Math.random()*450);
+  }
+}
+addLine();
+
+const t = setInterval(()=>{
+  p += Math.random()*3.5;
+  if(p >= 100){
+    p = 100;
+    clearInterval(t);
+    document.body.classList.add("glitch");
+    setTimeout(()=>{
+      document.getElementById("final").style.display = "block";
+      document.getElementById("log").style.display = "none";
+      document.getElementById("bar").style.display = "none";
+      document.getElementById("pct").style.display = "none";
+    }, 1000);
+  }
+  fill.style.width = p + "%";
+  pct.textContent = Math.floor(p) + "%";
+}, 350);
+</script>
+</body>
+</html>
